@@ -1,3 +1,4 @@
+// This code will run when the page loads
 document.addEventListener("DOMContentLoaded", (event) => {
   const budgetFields = ["essentials", "entertainment", "personalCare", "miscellaneous"];
 
@@ -10,16 +11,19 @@ document.addEventListener("DOMContentLoaded", (event) => {
     return total;
   }
 
+  // Update the total budget display
   function updateTotalBudgetDisplay(total) {
     document.getElementById("totalBudgetDisplay").textContent = total.toFixed(2);
   }
 
+  // Update the category displays
   function updateCategoryDisplays(budget) {
     budgetFields.forEach((field) => {
       document.getElementById(field + "Display").textContent = budget[field].toFixed(2);
     });
   }
 
+  // Add an event listener to the budget form
   document.getElementById("budgetForm").addEventListener("submit", function (event) {
     event.preventDefault();
     const budget = budgetFields.reduce((acc, field) => {
