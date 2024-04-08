@@ -1,6 +1,7 @@
 // This code will run when the page loads
 document.addEventListener("DOMContentLoaded", (event) => {
   const budgetFields = ["essentials", "entertainment", "personalCare", "miscellaneous"];
+  const itemCategories = {"essentials" :"Essentials", "entertainment": "Entertainment", "personalCare": "Personal Care", "miscellaneous": "Miscellaneous"};
 
   function calculateTotalBudget() {
     let total = 0;
@@ -121,9 +122,10 @@ document.addEventListener("DOMContentLoaded", (event) => {
   function addItemToTable(name, category, price) {
     const tableBody = document.getElementById("itemTable").getElementsByTagName("tbody")[0];
     const row = tableBody.insertRow();
+    const categoryDisplay = itemCategories[category];
     row.innerHTML = `
       <td>${name}</td>
-      <td>${category}</td>
+      <td>${categoryDisplay}</td>
       <td>£${price}</td>
       <td><button class="delete-button" onclick="deleteItem(this)">Delete</button></td>
     `;
