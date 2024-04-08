@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
   function calculateTotalSpentForCategory(category) {
     let totalSpent = 0;
     const items = JSON.parse(localStorage.getItem("items")) || [];
-    items.forEach(item => {
+    items.forEach((item) => {
       if (item.category === category) {
         totalSpent += parseFloat(item.price);
       }
@@ -96,9 +96,26 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const itemCategory = document.getElementById("itemCategory").value;
     const itemPrice = parseFloat(document.getElementById("itemPrice").value).toFixed(2);
 
+    // Check if the item price exceeds the remaining budget
+    const remainingBudget = calculateRemainingBudgetForCategory(itemCategory);
+    if (itemPrice > remainingBudget) {
+      const confirmation = window.confirm("This will exceed your budget for " + itemCategory + ", are you sure?");
+      if (!confirmation) {
+        return; // Cancel the addition of the new item
+      }
+    }
+
     addItemToTable(itemName, itemCategory, itemPrice);
     updateRemainingBudgetDisplay(); // This will also save to localStorage
   });
+
+  // Function to calculate the remaining budget for a given category
+  function calculateRemainingBudgetForCategory(category) {
+    const budgetAllocations = JSON.parse(localStorage.getItem("budget")) || { essentials: 0, entertainment: 0, personalCare: 0, miscellaneous: 0 };
+    const allocatedAmount = budgetAllocations[category] || 0;
+    const totalSpent = calculateTotalSpentForCategory(category);
+    return allocatedAmount - totalSpent;
+  }
 
   // Add item to table and save to localStorage
   function addItemToTable(name, category, price) {
