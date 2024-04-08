@@ -125,7 +125,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
       <td>${name}</td>
       <td>${category}</td>
       <td>£${price}</td>
-      <td><button onclick="deleteItem(this)">Delete</button></td>
+      <td><button class="delete-button" onclick="deleteItem(this)">Delete</button></td>
     `;
 
     saveItems(); // Save the new item list to localStorage

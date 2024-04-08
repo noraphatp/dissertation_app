@@ -68,3 +68,60 @@ body {
   margin-right: 1rem;
   font-weight: 600;
 }
+
+#itemForm {
+  margin-top: 1rem;
+}
+
+.add-item-button {
+  background-color: #219ebc;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.8rem;
+  transition: 0.2s;
+  margin-left: 1rem;
+}
+
+.add-item-button:hover {
+  background-color: #023047;
+}
+
+.add-item-button:active {
+  transform: scale(0.97);
+}
+
+#itemTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  margin-top: 2rem;
+}
+
+#itemTable th, #itemTable td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+#itemTable th {
+  background-color: #f8f8f8;
+}
+
+.delete-button {
+  background-color: #f44336;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 0.8rem;
+  transition: 0.2s;
+}
+
+.delete-button:hover {
+  background-color: #793030;
+}
+
+.delete-button:active {
+  transform: scale(0.97);
+}
