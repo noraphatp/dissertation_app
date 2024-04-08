@@ -19,7 +19,23 @@ document.addEventListener("DOMContentLoaded", (event) => {
   // Update the category displays
   function updateCategoryDisplays(budget) {
     budgetFields.forEach((field) => {
-      document.getElementById(field + "Display").textContent = budget[field].toFixed(2);
+      document.getElementById(field + "Display").textContent = '£' + budget[field].toFixed(2);
+    });
+  }
+
+  function updateCategoryColor() {
+    const positiveColor = "#31572c"; // Replace with your chosen color for positive values
+    const negativeColor = "#9e2a2b"; // Replace with your chosen color for negative values
+
+    budgetFields.forEach((field) => {
+      const value = parseFloat(document.getElementById(field).value) || 0;
+      const displayElement = document.getElementById(field + "Display");
+
+      if (value > 0) {
+        displayElement.style.color = positiveColor;
+      } else if (value < 0) {
+        displayElement.style.color = negativeColor;
+      } 
     });
   }
 
@@ -34,10 +50,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const totalBudget = calculateTotalBudget();
     updateTotalBudgetDisplay(totalBudget);
     updateCategoryDisplays(budget);
+    updateCategoryColor();
 
     localStorage.setItem("budget", JSON.stringify(budget));
     // Optional: Display a confirmation message
-    alert("Your budget has been set!");
+    // alert("Your budget has been set!");
   });
 
   // Load budget from localStorage if it exists
@@ -49,5 +66,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const totalBudget = calculateTotalBudget();
     updateTotalBudgetDisplay(totalBudget);
     updateCategoryDisplays(budget);
+    updateCategoryColor();
   }
 });
