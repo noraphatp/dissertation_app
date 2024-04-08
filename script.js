@@ -19,23 +19,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
   // Update the category displays
   function updateCategoryDisplays(budget) {
     budgetFields.forEach((field) => {
-      document.getElementById(field + "Display").textContent = '£' + budget[field].toFixed(2);
-    });
-  }
-
-  function updateCategoryColor() {
-    const positiveColor = "#31572c"; // Replace with your chosen color for positive values
-    const negativeColor = "#9e2a2b"; // Replace with your chosen color for negative values
-
-    budgetFields.forEach((field) => {
-      const value = parseFloat(document.getElementById(field).value) || 0;
-      const displayElement = document.getElementById(field + "Display");
-
-      if (value > 0) {
-        displayElement.style.color = positiveColor;
-      } else if (value < 0) {
-        displayElement.style.color = negativeColor;
-      } 
+      document.getElementById(field + "Display").textContent = "£" + budget[field].toFixed(2);
     });
   }
 
@@ -50,7 +34,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const totalBudget = calculateTotalBudget();
     updateTotalBudgetDisplay(totalBudget);
     updateCategoryDisplays(budget);
-    updateCategoryColor();
 
     localStorage.setItem("budget", JSON.stringify(budget));
     // Optional: Display a confirmation message
@@ -66,6 +49,99 @@ document.addEventListener("DOMContentLoaded", (event) => {
     const totalBudget = calculateTotalBudget();
     updateTotalBudgetDisplay(totalBudget);
     updateCategoryDisplays(budget);
-    updateCategoryColor();
+    updateRemainingBudgetDisplay();
   }
+
+  // Function to update the remaining budget for each category
+  function updateRemainingBudgetDisplay() {
+    const budget = JSON.parse(localStorage.getItem("budget")) || { essentials: 0, entertainment: 0, personalCare: 0, miscellaneous: 0 };
+    budgetFields.forEach((field) => {
+      const allocatedAmount = budget[field] || 0;
+      const totalSpent = calculateTotalSpentForCategory(field);
+      const remainingBudget = allocatedAmount - totalSpent;
+      document.getElementById(field + "Display").textContent = "£" + remainingBudget.toFixed(2);
+      updateCategoryColor(field, remainingBudget); // Update color based on remaining budget
+    });
+  }
+
+  // Function to calculate the total spent for a given category
+  function calculateTotalSpentForCategory(category) {
+    let totalSpent = 0;
+    const items = JSON.parse(localStorage.getItem("items")) || [];
+    items.forEach(item => {
+      if (item.category === category) {
+        totalSpent += parseFloat(item.price);
+      }
+    });
+    return totalSpent;
+  }
+
+  // Modified updateCategoryColor to take a field and value
+  function updateCategoryColor(field, value) {
+    const positiveColor = "#31572c";
+    const negativeColor = "#9e2a2b";
+    const displayElement = document.getElementById(field + "Display");
+
+    if (value > 0) {
+      displayElement.style.color = positiveColor;
+    } else if (value < 0) {
+      displayElement.style.color = negativeColor;
+    }
+  }
+
+  // Item form submission
+  document.getElementById("itemForm").addEventListener("submit", function (event) {
+    event.preventDefault();
+    const itemName = document.getElementById("itemName").value;
+    const itemCategory = document.getElementById("itemCategory").value;
+    const itemPrice = parseFloat(document.getElementById("itemPrice").value).toFixed(2);
+
+    addItemToTable(itemName, itemCategory, itemPrice);
+    updateRemainingBudgetDisplay(); // This will also save to localStorage
+  });
+
+  // Add item to table and save to localStorage
+  function addItemToTable(name, category, price) {
+    const tableBody = document.getElementById("itemTable").getElementsByTagName("tbody")[0];
+    const row = tableBody.insertRow();
+    row.innerHTML = `
+      <td>${name}</td>
+      <td>${category}</td>
+      <td>£${price}</td>
+      <td><button onclick="deleteItem(this)">Delete</button></td>
+    `;
+
+    saveItems(); // Save the new item list to localStorage
+  }
+
+  // Delete item from table and update localStorage
+  window.deleteItem = function (button) {
+    const row = button.parentNode.parentNode;
+    row.parentNode.removeChild(row);
+    saveItems(); // Update the item list in localStorage
+    const price = parseFloat(row.cells[2].textContent.replace("£", ""));
+    updateBudget(row.cells[1].textContent, -price); // Update the budget with the negative amount to subtract it
+    updateRemainingBudgetDisplay(); // Call this function after deleting an item to update the display
+  };
+
+  // Save all items to localStorage
+  function saveItems() {
+    const items = [];
+    const rows = document.getElementById("itemTable").rows;
+    for (let i = 1; i < rows.length; i++) {
+      items.push({
+        name: rows[i].cells[0].textContent,
+        category: rows[i].cells[1].textContent,
+        price: parseFloat(rows[i].cells[2].textContent.replace("£", "")),
+      });
+    }
+    localStorage.setItem("items", JSON.stringify(items));
+  }
+
+  // Load items from localStorage
+  const storedItems = JSON.parse(localStorage.getItem("items")) || [];
+  storedItems.forEach((item) => addItemToTable(item.name, item.category, item.price));
+
+  // Initial update for the budget display
+  updateRemainingBudgetDisplay();
 });
