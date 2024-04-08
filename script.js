@@ -132,22 +132,6 @@ document.addEventListener("DOMContentLoaded", (event) => {
     updateRemainingBudgetDisplay(); // Update the display
   }
 
-  // Update the budget allocations in localStorage and the display
-  function updateBudget(category, amount) {
-    const budgetAllocations = JSON.parse(localStorage.getItem("budget")) || { essentials: 0, entertainment: 0, personalCare: 0, miscellaneous: 0 };
-
-    // Update the allocated amount for the category
-    if (budgetAllocations.hasOwnProperty(category)) {
-      budgetAllocations[category] += amount;
-    }
-
-    // Save the updated budget back to localStorage
-    localStorage.setItem("budget", JSON.stringify(budgetAllocations));
-
-    // Update the UI
-    updateRemainingBudgetDisplay();
-  }
-
   // Delete item from table and update localStorage
   window.deleteItem = function (button) {
     const row = button.parentNode.parentNode;
