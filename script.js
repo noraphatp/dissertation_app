@@ -129,23 +129,69 @@ document.addEventListener("DOMContentLoaded", (event) => {
     `;
 
     saveItems(); // Save the new item list to localStorage
+    updateRemainingBudgetDisplay(); // Update the display
+  }
+
+  // Update the budget allocations in localStorage and the display
+  function updateBudget(category, amount) {
+    const budgetAllocations = JSON.parse(localStorage.getItem("budget")) || { essentials: 0, entertainment: 0, personalCare: 0, miscellaneous: 0 };
+
+    // Update the allocated amount for the category
+    if (budgetAllocations.hasOwnProperty(category)) {
+      budgetAllocations[category] += amount;
+    }
+
+    // Save the updated budget back to localStorage
+    localStorage.setItem("budget", JSON.stringify(budgetAllocations));
+
+    // Update the UI
+    updateRemainingBudgetDisplay();
   }
 
   // Delete item from table and update localStorage
   window.deleteItem = function (button) {
     const row = button.parentNode.parentNode;
+    const itemCategory = row.cells[1].textContent;
+
+    // Adjust the budget allocations
+    const budgetAllocations = JSON.parse(localStorage.getItem("budget")) || { essentials: 0, entertainment: 0, personalCare: 0, miscellaneous: 0 };
+    if (budgetAllocations[itemCategory] !== undefined) {
+      localStorage.setItem("budget", JSON.stringify(budgetAllocations)); // Save the updated budget
+    }
+
+    // Remove the item from the table
     row.parentNode.removeChild(row);
-    saveItems(); // Update the item list in localStorage
-    const price = parseFloat(row.cells[2].textContent.replace("£", ""));
-    updateBudget(row.cells[1].textContent, -price); // Update the budget with the negative amount to subtract it
-    updateRemainingBudgetDisplay(); // Call this function after deleting an item to update the display
+
+    // Update the items array and localStorage
+    updateItemsArray();
+
+    // Update the remaining budget display
+    updateRemainingBudgetDisplay();
   };
 
-  // Save all items to localStorage
+  // Ensure updateItemsArray is only responsible for updating the items in localStorage
+  function updateItemsArray() {
+    const items = [];
+    // Get all the rows in the table body except the header row
+    const rows = document.getElementById("itemTable").getElementsByTagName("tbody")[0].rows;
+
+    for (let i = 0; i < rows.length; i++) {
+      const item = {
+        name: rows[i].cells[0].textContent,
+        category: rows[i].cells[1].textContent,
+        price: parseFloat(rows[i].cells[2].textContent.replace("£", "")),
+      };
+      items.push(item);
+    }
+
+    localStorage.setItem("items", JSON.stringify(items));
+  }
+
+  // Save items to localStorage
   function saveItems() {
     const items = [];
-    const rows = document.getElementById("itemTable").rows;
-    for (let i = 1; i < rows.length; i++) {
+    const rows = document.getElementById("itemTable").getElementsByTagName("tbody")[0].rows;
+    for (let i = 0; i < rows.length; i++) {
       items.push({
         name: rows[i].cells[0].textContent,
         category: rows[i].cells[1].textContent,
